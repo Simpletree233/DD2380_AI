@@ -60,48 +60,71 @@ class PlayerControllerMinimax(PlayerController):
         :return: either "stay", "left", "right", "up" or "down"
         :rtype: str
         """
-        alpha_top = np.NINF
-        beta_top = np.PINF
-        children = initial_tree_node.compute_and_get_children()
-        best_score = np.NINF
-        for i in children:
-            current_score = self.minimax(i, alpha_top, beta_top)
-            if current_score > best_score:
-                best_score = current_score
+        alpha_top = -9999
+        beta_top = 9999
+
+        # create children node
+        initial_tree_node.compute_and_get_children()
+        #print(len(children))  # equals 5
+
+        depth_limit = 2  #depth limit in minimax search
+
+        best_score = -9999
+        best_score = self.minimax(initial_tree_node, alpha_top, beta_top, depth_limit)
 
         print(best_score)
-        #but it needs to return the action
+
+        #function()# returning the best move
 
         random_move = random.randrange(5)
         return ACTION_TO_STR[random_move]
 
-    def minimax(self, alpha, beta):
-        alpha = np.NINF
-        beta = np.PINF
-        depth = 2
-        current_turn = node.state.getplayer()
+    def minimax(self, node: Node, alpha, beta, depth_limit):
+        if node.depth == depth_limit:
+            return self.heuristic(node)
+        alpha = -999
+        beta = 999
 
-        if current_turn > 0:
-            min_value = np.PINF
-            children = node.compute_and_get_children()
-            for i in children:
-                value = self.minimax(i, alpha, beta)
-                min_value = min(value, min_value)
-                beta = min(min_value, beta)
-                # if beta <= alpha:
-                #     break
-            return min_value
 
-        else:
-            max_value = np.NINF
-            children = node.compute_and_get_children()
-            for i in children:
-                value = self.minimax(i, alpha, beta)
-                max_value = max(value, max_value)
-                alpha = max(max_value, alpha)
-                # if beta <= alpha:
-                #     break
-            return max_value
+        if not (node.state.get_player == 0): #MIN's turn
+            best_value = 999
+            #children = node.compute_and_get_children()
+            for i in node.children:
+                value = self.minimax(i, alpha, beta, depth_limit)
+                
+                best_value = min(value, best_value)'
+                
+                beta = min(best_value, beta)
+                if beta <= alpha:
+                    break
+            #return min_value
+
+        else:  # MAX's turn
+            best_value = -999
+            #children = node.compute_and_get_children()
+            for i in node.children:
+                value = self.minimax(i, alpha, beta, depth_limit)
+                best_value = max(value, best_value)
+                alpha = max(best_value, alpha)
+                if beta <= alpha:
+                     break
+        return best_value 
+
+    def heuristic(self, node: Node):  #given a node, return a heuristic value
+
+        hook_pos = node.state.get_hook_positions # return: dict of 2-tuples with (x, y) values of each player's hook
+        fish_pos = node.state.get_fish_positions
+        #print(fish_pos()[0])
+        print("fish position at:" , fish_pos()) # maybe here can compute the avergae of fish
+        #print(np.average(fish_pos().values()))
+        x_sum = 0
+        y_sum = 0
+        for i in range(len(fish_pos().keys())):
+            x_sum = x_sum + fish_pos()[i][0]
+            y_sum = y_sum + fish_pos()[i][1]
+        average_xy = (x_sum/len(fish_pos().keys()), y_sum/len(fish_pos())) #to get the average position of all the fishes
         
-        
-
+        dist = np.sqrt((hook_pos[0] - average_xy[0])^2 + (hook_pos[1] - average_xy[1])^2)
+        value = -dist # we want to stay close to the fishes
+        #hook_pos()[0]
+        return value
