@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import random
+import numpy as np
 
 from fishing_game_core.game_tree import Node
 from fishing_game_core.player_utils import PlayerController
@@ -59,11 +60,46 @@ class PlayerControllerMinimax(PlayerController):
         :return: either "stay", "left", "right", "up" or "down"
         :rtype: str
         """
+        alpha_top = np.NINF
+        beta_top = np.PINF
+        children = initial_tree_node.compute_and_get_children()
+        best_score = np.NINF
+        for i in children:
+            current_score = self.minimax(i, alpha_top, beta_top)
+            if current_score > best_score:
+                best_score = current_score
 
-        # EDIT THIS METHOD TO RETURN BEST NEXT POSSIBLE MODE USING MINIMAX ###
-
-        # NOTE: Don't forget to initialize the children of the current node
-        #       with its compute_and_get_children() method!
+        print(best_score)
+        #but it needs to return the action
 
         random_move = random.randrange(5)
         return ACTION_TO_STR[random_move]
+
+    def minimax(self, alpha, beta):
+        alpha = np.NINF
+        beta = np.PINF
+        depth = 2
+        if depth > 0:
+            min_value = np.PINF
+            children = node.compute_and_get_children()
+            for i in children:
+                value = self.minimax(i, alpha, beta)
+                min_value = min(value, min_value)
+                beta = min(min_value, beta)
+                # if beta <= alpha:
+                #     break
+            return min_value
+
+        else:
+            max_value = np.NINF
+            children = node.compute_and_get_children()
+            for i in children:
+                value = self.minimax(i, alpha, beta)
+                maxEval = max(value, max_value)
+                alpha = max(max_value, alpha)
+                # if beta <= alpha:
+                #     break
+            return maxEval
+        
+        
+
