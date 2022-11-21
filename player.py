@@ -97,7 +97,7 @@ class PlayerControllerMinimax(PlayerController):
             children = node.compute_and_get_children()
             for i in children:
                 value = self.minimax(i, alpha, beta)
-                maxEval = max(value, max_value)
+                max_value = max(value, max_value)
                 alpha = max(max_value, alpha)
                 # if beta <= alpha:
                 #     break
