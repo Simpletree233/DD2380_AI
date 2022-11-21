@@ -79,7 +79,9 @@ class PlayerControllerMinimax(PlayerController):
         alpha = np.NINF
         beta = np.PINF
         depth = 2
-        if depth > 0:
+        current_turn = node.state.getplayer()
+
+        if current_turn > 0:
             min_value = np.PINF
             children = node.compute_and_get_children()
             for i in children:
@@ -99,7 +101,7 @@ class PlayerControllerMinimax(PlayerController):
                 alpha = max(max_value, alpha)
                 # if beta <= alpha:
                 #     break
-            return maxEval
+            return max_value
         
         
 
