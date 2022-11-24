@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import random
 import numpy as np
+from time import time
 
 from fishing_game_core.game_tree import Node
 from fishing_game_core.player_utils import PlayerController
@@ -42,6 +43,7 @@ class PlayerControllerMinimax(PlayerController):
 
         while True:
             msg = self.receiver()
+            self.start_time = time()
 
             # Create the root node of the game tree
             node = Node(message=msg, player=0)
@@ -67,9 +69,11 @@ class PlayerControllerMinimax(PlayerController):
         # create children node
         initial_tree_node.compute_and_get_children()
 
-        depth_limit = 4  #depth limit in minimax search
+        depth_limit = 8  #depth limit in minimax search
 
         best_score = -9999
+
+
         best_value, best_value_node = self.minimax(initial_tree_node, alpha_top, beta_top, depth_limit)
         #print(best_value)
 
@@ -87,13 +91,13 @@ class PlayerControllerMinimax(PlayerController):
 
     def minimax(self, node: Node, alpha, beta, depth_limit):
         #print("Current depth: ", node.depth)
+        time_limit = 0.05
         if node.depth == depth_limit: 
             #print("arrive at leaf node")
             return self.heuristic_rob(node), node
 
         alpha = -999
         beta = 999
-
         if not (node.state.get_player == 0): #MIN's turn
             best_value = 999
             try:
@@ -110,6 +114,8 @@ class PlayerControllerMinimax(PlayerController):
 
                 beta = min(best_value, beta)
                 if beta <= alpha:
+                    break
+                if time() - self.start_time > (time_limit):
                     break
             #return min_value
 
@@ -131,6 +137,8 @@ class PlayerControllerMinimax(PlayerController):
                 alpha = max(best_value, alpha)
                 if beta <= alpha:
                      break
+                if time() - self.start_time > (time_limit):
+                    break
         '''
         node = best_value_node
         for i in range(depth_limit-1):
