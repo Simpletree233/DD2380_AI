@@ -69,7 +69,8 @@ class PlayerControllerMinimax(PlayerController):
         # create children node
         initial_tree_node.compute_and_get_children()
 
-        depth_limit = 8  #depth limit in minimax search
+        depth_limit = 2  #depth limit in minimax search
+        
 
         best_score = -9999
 
@@ -79,7 +80,7 @@ class PlayerControllerMinimax(PlayerController):
 
         node_with_best_value = best_value_node
 
-        for i in range(depth_limit-1):
+        for i in range(node_with_best_value.depth -1):
             node_with_best_value = node_with_best_value.parent
         best_move = node_with_best_value.move
 
@@ -91,14 +92,15 @@ class PlayerControllerMinimax(PlayerController):
 
     def minimax(self, node: Node, alpha, beta, depth_limit):
         #print("Current depth: ", node.depth)
-        time_limit = 0.05
+        time_limit = 0.5
         if node.depth == depth_limit: 
             #print("arrive at leaf node")
             return self.heuristic_rob(node), node
 
         alpha = -999
         beta = 999
-        if not (node.state.get_player == 0): #MIN's turn
+        if not (node.depth % 2 == 0): #When depth is an even number ->  MIN's turn
+            #print("Now is MIN's turn")
             best_value = 999
             try:
                 best_value_node = node.children[0]  # should assign a leaf node here
@@ -113,6 +115,7 @@ class PlayerControllerMinimax(PlayerController):
                     best_value = value
 
                 beta = min(best_value, beta)
+                print("Beta: ",beta)
                 if beta <= alpha:
                     break
                 if time() - self.start_time > (time_limit):
@@ -121,6 +124,7 @@ class PlayerControllerMinimax(PlayerController):
 
         else:  # MAX's turn
             best_value = -999
+            #print("Now is MAX's turn")
             try:
                 best_value_node = node.children[0]  # should assign a leaf node here
             except:
@@ -135,18 +139,15 @@ class PlayerControllerMinimax(PlayerController):
                     best_value = value
 
                 alpha = max(best_value, alpha)
+                print("Alpha is: ", alpha)
                 if beta <= alpha:
                      break
                 if time() - self.start_time > (time_limit):
                     break
-        '''
-        node = best_value_node
-        for i in range(depth_limit-1):
-            node = node.parent
-        '''
+       
         return best_value, best_value_node;  # this is the {value,node} returned by MINIMAX
 
-    def heuristic(self, node: Node):  
+    def heuristic(self, node: Node):     
         # THis heuristic calculates the distance between the hook pos and the avergae postion of the fishes
 
         hook_pos = node.state.get_hook_positions() # return: dict of 2-tuples with (x, y) values of each player's hook
@@ -189,12 +190,16 @@ class PlayerControllerMinimax(PlayerController):
         dist_ahead_max = 0  # only when we are closer to the fish than our opponent, we set it as our target
         for i in MAXs_distance.keys():
             dist_ahead = MAXs_distance[i] - MINs_distance[i]
+            
             if dist_ahead  < 0 and dist_ahead < dist_ahead_max : # find the closest possible fish as target
                 target_fish = i
                 dist_ahead_max = dist_ahead
 
         if target_fish == None:
-            return -999
+            try:
+                 target_fish = list(fish_pos.keys())[0]
+            except:
+                return -999
         
         target_fish_pos = fish_pos[target_fish] # a tuple (X,Y) 
 
