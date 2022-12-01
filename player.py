@@ -2,6 +2,7 @@
 import random
 import numpy as np
 from time import time
+import math
 
 from fishing_game_core.game_tree import Node
 from fishing_game_core.player_utils import PlayerController
@@ -92,10 +93,10 @@ class PlayerControllerMinimax(PlayerController):
 
     def minimax(self, node: Node, alpha, beta, depth_limit):
         #print("Current depth: ", node.depth)
-        time_limit = 0.5
+        time_limit = 0.075
         if node.depth == depth_limit: 
             #print("arrive at leaf node")
-            return self.heuristic_rob(node), node
+            return self.calculate_heuristics(node), node
 
         alpha = -999
         beta = 999
@@ -146,6 +147,20 @@ class PlayerControllerMinimax(PlayerController):
                     break
        
         return best_value, best_value_node;  # this is the {value,node} returned by MINIMAX
+
+    def calculate_heuristics(self, node):
+        # the difference bwtween the scores + weighted sum of fish score and distance
+
+        total_score = node.state.player_scores[0] - node.state.player_scores[1]
+
+        h = 0
+        for i in node.state.fish_positions:
+            distance = self.L1_distance(node.state.fish_positions[i], node.state.hook_positions[0])
+            if distance == 0 and node.state.fish_scores[i] > 0:
+                return 999
+            h = max(h, node.state.fish_scores[i] * math.exp(-distance))
+
+        return 2 * total_score + h
 
     def heuristic(self, node: Node):     
         # THis heuristic calculates the distance between the hook pos and the avergae postion of the fishes
