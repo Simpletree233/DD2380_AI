@@ -88,7 +88,7 @@ class PlayerControllerMinimax(PlayerController):
         #random_move = random.randrange(5)
         #print("Heuristic value: ", self.heuristic(best_value_node))
         #string = ACTION_TO_STR[best_move]
-        print("Best move:", ACTION_TO_STR[best_move])
+        # print("Best move:", ACTION_TO_STR[best_move])
         return ACTION_TO_STR[best_move]
 
     def minimax(self, node: Node, alpha, beta, depth_limit):
@@ -116,8 +116,8 @@ class PlayerControllerMinimax(PlayerController):
                     best_value = value
 
                 beta = min(best_value, beta)
-                print("Beta: ",beta)
-                if beta <= alpha:
+                # print("Beta: ",beta)
+                if alpha >= beta:
                     break
                 if time() - self.start_time > (time_limit):
                     break
@@ -140,8 +140,8 @@ class PlayerControllerMinimax(PlayerController):
                     best_value = value
 
                 alpha = max(best_value, alpha)
-                print("Alpha is: ", alpha)
-                if beta <= alpha:
+                # print("Alpha is: ",alpha)
+                if alpha >= beta:
                      break
                 if time() - self.start_time > (time_limit):
                     break
