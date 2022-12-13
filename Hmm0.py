@@ -51,13 +51,12 @@ def main():
     
     
     
-    
-    next_state_probability = [    [        sum(initial_matrix[0][j] * transition_matrix[j][i]
-                for j in range(len(initial_matrix[0])))
-            for i in range(len(transition_matrix[0]))
-        ]
-    ]
-    
+    next_state_probability = []
+    for i in range(len(transition_matrix[0])):
+        prob = 0
+        for j in range(len(initial_matrix[0])):
+            prob += initial_matrix[0][j] * transition_matrix[j][i]
+        next_state_probability.append(prob)
     
     
     # Multiply the result by the emission matrix to get the emission
