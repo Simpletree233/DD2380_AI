@@ -1,8 +1,3 @@
-    
-    # By testing the .py code, just 
-    
-    
-    
 def main():
     # Split the line into a list of elements
     a = [float(x) for x in input().split()]
@@ -51,12 +46,13 @@ def main():
     
     
     
-    next_state_probability = []
-    for i in range(len(transition_matrix[0])):
-        prob = 0
-        for j in range(len(initial_matrix[0])):
-            prob += initial_matrix[0][j] * transition_matrix[j][i]
-        next_state_probability.append(prob)
+    
+    next_state_probability = [    [        sum(initial_matrix[0][j] * transition_matrix[j][i]
+                for j in range(len(initial_matrix[0])))
+            for i in range(len(transition_matrix[0]))
+        ]
+    ]
+    
     
     
     # Multiply the result by the emission matrix to get the emission
@@ -93,4 +89,3 @@ def main():
     
 if __name__ == "__main__":
     main()
-    
