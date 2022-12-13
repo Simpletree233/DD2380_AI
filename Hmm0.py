@@ -1,3 +1,6 @@
+#TODO: add dimension and space between the output elements
+
+
 def main():
     # Split the line into a list of elements
     a = [float(x) for x in input().split()]
