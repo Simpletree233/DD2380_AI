@@ -14,7 +14,7 @@ def matrix_mul(X,Y):
     Y = [ [1,2,3],[4,5,6] ]
     '''
     # resultant matrix
-    result = [[0 for _ in range(len(A))] for _ in range(len(B[0])]
+    result = [[0 for _ in range(len(A))] for _ in range(len(B[0]))]
 
     # iterating rows of X matrix
     for i in range( len(X) ):
@@ -32,8 +32,8 @@ def ele_wise_product(a:list,b:list):
         1xn column
     Returns a lsit
     '''
-    if !(len(a) == len(b)):
-        break
+    if not(len(a) == len(b)):
+        print ("Two list length Not equal!")
     else:
         result = [0 for _ in range(a)]
         for i in range(len(a)):
@@ -85,38 +85,19 @@ def main():
             initial_matrix[i][j] = float(pi[2 + i * initial_cols + j])
             
     # Extract the dimensions of the emission sequence matrix from the first two elements of the list
-    obs_seq = int(seq)
+    obs_seq = seq
     obs_row = seq[0]
-    observation = obse_seq.pop(0)
+    observation = obs_seq.pop(0)
 
     
 ##################################################################################
-# output a string that matches the Kattis output    HMM1  AlPHA-PASS algorithm
-'''
-    next_state_probability = [    [        sum(initial_matrix[0][j] * transition_matrix[j][i]
-                for j in range(len(initial_matrix[0])))
-            for i in range(len(transition_matrix[0]))
-        ]
-    ]
-    
-    emission_probability = []
-    for i in range(len(emission_matrix[0])):
-        prob = 0
-        for j in range(len(next_state_probability[0])):
-            prob += next_state_probability[0][j] * emission_matrix[j][i]
-        emission_probability.append(prob)
-    
-
-    formatted_emission_probability = list([])
-    for i in range(len(emission_probability)):
-        formatted_emission_probability.append(float('{:.1f}'.format(emission_probability[i])))
-'''    
-    
+ 
     # initilize alpha  at PAGE 59
     #initialize a zero alpha list
-    alpha = [0 for _ in range(observation)] 
+    alpha = [0 for _ in range(len(seq)-1)]
+
     #the index for fisrt element is 0
-    alpha[0] = ele_wise_product(initial_matrix,emission_matrix[:, observation[0]])
+    alpha[0] = ele_wise_product(initial_matrix,emission_matrix[:, int(observation[0])])
     
     for i in range(len(observaiton)-1):
         # alpha(t+1) = ele_wise_product((A*alpha(t)), b(Observation(t+1)))
